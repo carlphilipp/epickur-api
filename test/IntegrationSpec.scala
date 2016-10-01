@@ -10,9 +10,9 @@ class IntegrationSpec extends PlaySpec with OneServerPerTest with OneBrowserPerT
 
 		"work from within a browser" in {
 
-			go to ("http://localhost:" + port + "/user")
+			go to ("http://localhost:" + port + "/users")
 
-			pageSource must include("User controller")
+			pageSource must include("carl")
 		}
 	}
 }

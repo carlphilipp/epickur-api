@@ -20,11 +20,11 @@ class ApplicationSpec extends PlaySpec with OneAppPerTest {
 	"UserController" should {
 
 		"render the index page" in {
-			val home = route(app, FakeRequest(GET, "/user")).get
+			val home = route(app, FakeRequest(GET, "/users")).get
 
 			status(home) mustBe OK
-			contentType(home) mustBe Some("text/html")
-			contentAsString(home) must include("User controller")
+			contentType(home) mustBe Some("application/json")
+			contentAsString(home) must include("carl")
 		}
 	}
 }
