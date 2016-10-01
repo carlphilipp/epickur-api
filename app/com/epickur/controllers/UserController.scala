@@ -10,9 +10,7 @@ import play.api.mvc.{Action, Controller}
 class UserController @Inject() extends Controller {
 
 	def getUser = Action {
-		val user = new User()
-		user.name_=("harmant")
-		user.first_=("carl")
+		val user = new User("carlphilipp", "carl", "harmant", "mypassword", "cp.harmant@gmail.com", "60614", "Illinois", "USA")
 		Ok(Json.toJson(user))
 	}
 }

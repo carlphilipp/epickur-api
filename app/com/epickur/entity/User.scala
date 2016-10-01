@@ -1,26 +1,21 @@
 package com.epickur.entity
 
-import play.api.libs.json.{Json, Writes}
+import play.api.libs.json.Json
 
-class User {
-	private[this] var mName: String = _
-	private[this] var mFirst: String = _
-
-	def name = mName
-
-	def first = mFirst
-
-	def name_=(s: String) = {
-		mName = s
-	}
-
-	def first_=(a: String) = {
-		mFirst = a
-	}
-}
+case class User(var name: String,
+				var first: String,
+				var last: String,
+				var password: String,
+				var email: String,
+				var zipcode: String,
+				var state: String,
+				var country: String,
+				var allow: Int = 0,
+				var code: String = null,
+				var key: String = null,
+				var newPassword: String = null)
 
 object User {
-	implicit val userToJson: Writes[User] = Writes {
-		(user: User) => Json.obj("first" -> user.first, "name" -> user.name)
-	}
+	// TODO create own write implementation to hide null field
+	implicit val userToJson = Json.writes[User]
 }
