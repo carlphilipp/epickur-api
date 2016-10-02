@@ -1,5 +1,3 @@
-import java.time.LocalDateTime
-
 import com.epickur.entity.User
 import org.scalatestplus.play._
 import play.api.libs.json.Json
@@ -25,18 +23,7 @@ class ApplicationSpec extends PlaySpec with OneAppPerTest {
 			status(home) mustBe OK
 			contentType(home) mustBe Some("application/json")
 			val user = contentAsJson(home).as[User]
-			assert(user.id.getOrElse(fail) == TestUtils.id.toLong)
-			assert(user.name == TestUtils.name)
-			assert(user.first == TestUtils.first)
-			assert(user.last == TestUtils.last)
-			assert(user.password == TestUtils.password)
-			assert(user.email == TestUtils.email)
-			assert(user.zipcode == TestUtils.zipcode)
-			assert(user.state == TestUtils.state)
-			assert(user.country == TestUtils.country)
-			assert(user.allow == TestUtils.allow.toInt)
-			assert(user.createdAt != null)
-			assert(user.updatedAt != null)
+			verifyUser(user)
 		}
 	}
 
@@ -49,7 +36,23 @@ class ApplicationSpec extends PlaySpec with OneAppPerTest {
 			val home = route(app, fakeRequest).get
 			status(home) mustBe OK
 			contentType(home) mustBe Some("application/json")
-			contentAsString(home) must include("carl")
+			val user = contentAsJson(home).as[User]
+			verifyUser(user)
 		}
+	}
+
+	def verifyUser(user: User) = {
+		assert(user.id.getOrElse(fail) == TestUtils.id.toLong)
+		assert(user.name == TestUtils.name)
+		assert(user.first == TestUtils.first)
+		assert(user.last == TestUtils.last)
+		assert(user.password == TestUtils.password)
+		assert(user.email == TestUtils.email)
+		assert(user.zipcode == TestUtils.zipcode)
+		assert(user.state == TestUtils.state)
+		assert(user.country == TestUtils.country)
+		assert(user.allow == TestUtils.allow.toInt)
+		assert(user.createdAt != null)
+		assert(user.updatedAt != null)
 	}
 }
