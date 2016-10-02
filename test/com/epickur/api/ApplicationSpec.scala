@@ -1,4 +1,4 @@
-package com.epickur
+package com.epickur.api
 
 import org.scalatestplus.play._
 import play.api.test.FakeRequest

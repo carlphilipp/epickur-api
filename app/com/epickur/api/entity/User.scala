@@ -1,4 +1,4 @@
-package com.epickur.entity
+package com.epickur.api.entity
 
 import java.time.LocalDateTime
 

@@ -1,4 +1,4 @@
-package com.epickur.utils
+package com.epickur.api.utils
 
 object TestUtils {
 	val id = "123787891"

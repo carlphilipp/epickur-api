@@ -1,7 +1,7 @@
-package com.epickur.controllers
+package com.epickur.api.controllers
 
-import com.epickur.entity.User
-import com.epickur.utils.TestUtils
+import com.epickur.api.entity.User
+import com.epickur.api.utils.TestUtils
 import org.scalatestplus.play._
 import play.api.libs.json.Json
 import play.api.test.FakeRequest

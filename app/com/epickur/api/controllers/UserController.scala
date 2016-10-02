@@ -1,8 +1,8 @@
-package com.epickur.controllers
+package com.epickur.api.controllers
 
 import javax.inject.{Inject, Singleton}
 
-import com.epickur.entity.User
+import com.epickur.api.entity.User
 import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
 
