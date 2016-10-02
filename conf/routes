@@ -1,5 +1,6 @@
 # Routes
 # This file defines all application routes (Higher priority routes first)
 
-POST        /users            com.epickur.controllers.UserController.create
 GET         /users/:id        com.epickur.controllers.UserController.read(id: Long)
+POST        /users            com.epickur.controllers.UserController.create
+PUT         /users/:id        com.epickur.controllers.UserController.read(id: Long)

@@ -1,3 +1,5 @@
+package com.epickur.utils
+
 object TestUtils {
 	val id = "123787891"
 	val name = "carlphilipp"
