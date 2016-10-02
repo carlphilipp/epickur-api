@@ -35,7 +35,7 @@ class UserControllerTest extends PlaySpec with OneAppPerTest {
 
 	"UserController" should {
 		"Update user" in {
-			val fakeRequest = FakeRequest(PUT, "/users")
+			val fakeRequest = FakeRequest(PUT, s"/users/${TestUtils.id}")
 				.withJsonBody(Json.parse(TestUtils.user))
 				.withHeaders(CONTENT_TYPE -> JSON)
 

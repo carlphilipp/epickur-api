@@ -3,4 +3,4 @@
 
 GET         /users/:id        com.epickur.controllers.UserController.read(id: Long)
 POST        /users            com.epickur.controllers.UserController.create
-PUT         /users/:id        com.epickur.controllers.UserController.read(id: Long)
+PUT         /users/:id        com.epickur.controllers.UserController.update(id: Long)

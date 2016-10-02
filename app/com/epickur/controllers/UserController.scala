@@ -10,13 +10,17 @@ import play.api.mvc.{Action, Controller}
 class UserController @Inject() extends Controller {
 
 	def create = Action(parse.json) { request =>
-		val body = Json.parse(request.body.toString())
-		val user = body.as[User]
+		val user = request.body.as[User]
 		Ok(Json.toJson(user))
 	}
 
 	def read(id: Long) = Action {
 		val user = new User(Option.apply(id), "carlphilipp", "carl", "harmant", "mypassword", "cp.harmant@gmail.com", "60614", "Illinois", "USA")
+		Ok(Json.toJson(user))
+	}
+
+	def update(id: Long) = Action(parse.json) { request =>
+		val user = request.body.as[User]
 		Ok(Json.toJson(user))
 	}
 }
