@@ -13,4 +13,18 @@ class UserServiceTest extends PlaySpec with OneAppPerTest {
 			TestUtils.verifyUser(user)
 		}
 	}
+
+	"UserService" should {
+		"Get user" in {
+			val user = userService.read(TestUtils.id.toLong)
+			TestUtils.verifyUser(user)
+		}
+	}
+
+	"UserService" should {
+		"Update user" in {
+			val user = userService.update(TestUtils.user)
+			TestUtils.verifyUser(user)
+		}
+	}
 }
