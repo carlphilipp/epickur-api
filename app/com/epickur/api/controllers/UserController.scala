@@ -3,24 +3,27 @@ package com.epickur.api.controllers
 import javax.inject.{Inject, Singleton}
 
 import com.epickur.api.entity.User
+import com.epickur.api.services.UserService
 import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
 
 @Singleton
-class UserController @Inject() extends Controller {
+class UserController @Inject()(userService: UserService) extends Controller {
 
 	def create = Action(parse.json) { request =>
 		val user = request.body.as[User]
-		Ok(Json.toJson(user))
+		val userCreated = userService.create(user)
+		Ok(Json.toJson(userCreated))
 	}
 
 	def read(id: Long) = Action {
-		val user = new User(Option.apply(id), "carlphilipp", "carl", "harmant", "mypassword", "cp.harmant@gmail.com", "60614", "Illinois", "USA")
+		val user = userService.read(id)
 		Ok(Json.toJson(user))
 	}
 
 	def update(id: Long) = Action(parse.json) { request =>
 		val user = request.body.as[User]
-		Ok(Json.toJson(user))
+		val userUpdated = userService.update(user)
+		Ok(Json.toJson(userUpdated))
 	}
 }
