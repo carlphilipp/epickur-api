@@ -12,10 +12,9 @@ libraryDependencies ++= Seq(
 	jdbc,
 	cache,
 	ws,
-	"org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test
+	"org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
+	"org.specs2" %% "specs2-core" % "3.0" % Test,
+	"org.specs2" %% "specs2-mock" % "3.6.5" % Test
 )
-
-libraryDependencies += "org.specs2" %% "specs2-core" % "3.0" % Test
-libraryDependencies += "org.mockito" % "mockito-core" % "2.1.0-RC.2" % Test
 
 fork in run := true
