@@ -1,8 +1,5 @@
 # Routes
 # This file defines all application routes (Higher priority routes first)
 
-# An example controller showing how to write asynchronous code
-GET        /users               com.epickur.controllers.UserController.getUser
-
-# Map static resources from the /public folder to the /assets URL path
-GET        /assets/*file        controllers.Assets.versioned(path="/public", file: Asset)
+POST        /users               com.epickur.controllers.UserController.create
+GET         /users               com.epickur.controllers.UserController.read

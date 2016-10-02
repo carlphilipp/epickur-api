@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 import play.api.libs.json.Json
 
-case class User(var userId: String = null,
+case class User(var id: Option[String] = None,
 				var name: String,
 				var first: String,
 				var last: String,
@@ -14,13 +14,13 @@ case class User(var userId: String = null,
 				var state: String,
 				var country: String,
 				var allow: Int = 0,
-				var code: String = null,
-				var key: String = null,
-				var newPassword: String = null,
+				var code: Option[String] = None,
+				var key: Option[String] = None,
+				var newPassword: Option[String] = None,
 				var createdAt: LocalDateTime = LocalDateTime.now(),
 				var updatedAt: LocalDateTime = LocalDateTime.now())
 
 object User {
-	// TODO create own write implementation to hide null field
 	implicit val userToJson = Json.writes[User]
+	implicit val jsonToUser = Json.reads[User]
 }
