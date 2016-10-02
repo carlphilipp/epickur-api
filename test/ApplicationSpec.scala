@@ -1,3 +1,6 @@
+import java.time.LocalDateTime
+
+import com.epickur.entity.User
 import org.scalatestplus.play._
 import play.api.libs.json.Json
 import play.api.test.Helpers._
@@ -10,35 +13,40 @@ import play.api.test._
   */
 class ApplicationSpec extends PlaySpec with OneAppPerTest {
 
-	var user = """{"id":"123787891","name":"carlphilipp","first":"carl","last":"harmant","password":"mypassword","email":"cp.harmant@gmail.com","zipcode":"60614","state":"Illinois","country":"USA","allow":0,"createdAt":"2016-10-01T19:41:00.683","updatedAt":"2016-10-01T19:41:00.685"}"""
-
 	"Routes" should {
-
 		"Send 404 on a bad request" in {
-			route(app, FakeRequest(GET, "/boum")).map(status) mustBe Some(NOT_FOUND)
+			route(app, FakeRequest(GET, "/boomz")).map(status) mustBe Some(NOT_FOUND)
 		}
 	}
 
 	"UserController" should {
-
 		"Get current user" in {
-			val home = route(app, FakeRequest(GET, "/users")).get
-
+			val home = route(app, FakeRequest(GET, s"/users/${TestUtils.id}")).get
 			status(home) mustBe OK
 			contentType(home) mustBe Some("application/json")
-			contentAsString(home) must include("carl")
+			val user = contentAsJson(home).as[User]
+			assert(user.id.getOrElse(fail) == TestUtils.id.toLong)
+			assert(user.name == TestUtils.name)
+			assert(user.first == TestUtils.first)
+			assert(user.last == TestUtils.last)
+			assert(user.password == TestUtils.password)
+			assert(user.email == TestUtils.email)
+			assert(user.zipcode == TestUtils.zipcode)
+			assert(user.state == TestUtils.state)
+			assert(user.country == TestUtils.country)
+			assert(user.allow == TestUtils.allow.toInt)
+			assert(user.createdAt != null)
+			assert(user.updatedAt != null)
 		}
 	}
 
 	"UserController" should {
-
 		"Create user" in {
 			val fakeRequest = FakeRequest(POST, "/users")
-				.withJsonBody(Json.parse(user))
+				.withJsonBody(Json.parse(TestUtils.user))
 				.withHeaders(CONTENT_TYPE -> "application/json")
 
 			val home = route(app, fakeRequest).get
-
 			status(home) mustBe OK
 			contentType(home) mustBe Some("application/json")
 			contentAsString(home) must include("carl")

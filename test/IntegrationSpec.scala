@@ -7,11 +7,8 @@ import org.scalatestplus.play._
 class IntegrationSpec extends PlaySpec with OneServerPerTest with OneBrowserPerTest with HtmlUnitFactory {
 
 	"Application" should {
-
 		"work from within a browser" in {
-
-			go to ("http://localhost:" + port + "/users")
-
+			go to ("http://localhost:" + port + "/users/123458")
 			pageSource must include("carl")
 		}
 	}

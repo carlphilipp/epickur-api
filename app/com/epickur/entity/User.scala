@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 import play.api.libs.json.Json
 
-case class User(var id: Option[String] = None,
+case class User(var id: Option[Long] = None,
 				var name: String,
 				var first: String,
 				var last: String,
