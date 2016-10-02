@@ -1,11 +1,18 @@
 package com.epickur.api.services
 
+import com.epickur.api.dao.UserDAO
 import com.epickur.api.utils.TestUtils
+import org.mockito.Mockito._
+import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneAppPerTest, PlaySpec}
 
-class UserServiceTest extends PlaySpec with OneAppPerTest {
+class UserServiceTest extends PlaySpec with OneAppPerTest with MockitoSugar {
 
-	val userService = new UserService()
+	val userDAO = mock[UserDAO]
+	when(userDAO.create(TestUtils.user)) thenReturn TestUtils.user
+	when(userDAO.read(TestUtils.id.toLong)) thenReturn TestUtils.user
+	when(userDAO.update(TestUtils.user)) thenReturn TestUtils.user
+	val userService = new UserService(userDAO)
 
 	"UserService" should {
 		"Create user" in {

@@ -1,6 +1,6 @@
 package com.epickur.api
 
-import com.epickur.api.entity.User
+import com.epickur.api.entities.User
 import com.epickur.api.utils.TestUtils
 import org.scalatestplus.play._
 import play.api.libs.json.Json

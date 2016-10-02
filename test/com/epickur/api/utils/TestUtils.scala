@@ -1,6 +1,6 @@
 package com.epickur.api.utils
 
-import com.epickur.api.entity.User
+import com.epickur.api.entities.User
 import play.api.libs.json.Json
 
 object TestUtils {
