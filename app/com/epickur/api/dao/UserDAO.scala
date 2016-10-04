@@ -15,11 +15,7 @@ class UserDAO @Inject()(val reactiveMongoApi: ReactiveMongoApi)(implicit exec: E
 
 	def create(user: User): Future[Unit] = userFuture.flatMap(_.insert(user)).map(_ => {})
 
-	def read(id: Long): User = {
-		new User(Option.apply(id), "carlphilipp", "carl", "harmant", "mypassword", "cp.harmant@gmail.com", "60614", "Illinois", "USA")
-	}
+	def read(id: Long): User = new User(Option.apply(id), "carlphilipp", "carl", "harmant", "mypassword", "cp.harmant@gmail.com", "60614", "Illinois", "USA")
 
-	def update(user: User): User = {
-		user
-	}
+	def update(user: User): User = user
 }
