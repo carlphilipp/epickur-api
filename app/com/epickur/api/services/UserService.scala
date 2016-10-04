@@ -5,10 +5,12 @@ import javax.inject.{Inject, Singleton}
 import com.epickur.api.dao.UserDAO
 import com.epickur.api.entities.User
 
+import scala.concurrent.Future
+
 @Singleton
 class UserService @Inject()(userDAO: UserDAO) {
 
-	def create(user: User): User = {
+	def create(user: User): Future[Unit] = {
 		userDAO.create(user)
 	}
 
