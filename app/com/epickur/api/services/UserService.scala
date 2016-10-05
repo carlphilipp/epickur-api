@@ -13,7 +13,7 @@ class UserService @Inject()(userDAO: UserDAO) {
 
 	def create(user: User): Future[Unit] = userDAO.create(user)
 
-	def read(id: Long): User = userDAO.read(id)
+	def read(id: Long): Future[List[JsObject]] = userDAO.read(id)
 
 	def readByName(name: String): Future[List[JsObject]] = userDAO.readByName(name)
 

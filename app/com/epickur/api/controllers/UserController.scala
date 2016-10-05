@@ -32,9 +32,25 @@ class UserController @Inject()(userService: UserService)(implicit exec: Executio
 			}
 	}
 
-	def read(id: Long) = Action {
-		val user = userService.read(id)
-		Ok(Json.toJson(user))
+	def read(id: Long) = Action.async { request =>
+		userService.read(id)
+			.map(users => {
+				if (users.nonEmpty)
+					Ok(Json.toJson(users.head))
+				else
+					NotFound
+			})
+			.recover {
+				case dbe: DatabaseException =>
+					Logger.error("Error while getting user " + id, dbe)
+					Conflict
+				case n: NodeSetNotReachable =>
+					Logger.error("Error while getting user " + id, n)
+					ServiceUnavailable
+				case t: Throwable =>
+					Logger.error("Error while getting user " + id, t)
+					ServiceUnavailable
+			}
 	}
 
 	def readByName(name: String) = Action.async { request =>
