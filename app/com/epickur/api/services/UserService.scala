@@ -4,7 +4,7 @@ import javax.inject.{Inject, Singleton}
 
 import com.epickur.api.dao.UserDAO
 import com.epickur.api.entities.User
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.JsObject
 
 import scala.concurrent.Future
 

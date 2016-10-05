@@ -8,6 +8,7 @@ import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
 import reactivemongo.core.actors.Exceptions.NodeSetNotReachable
+import reactivemongo.core.errors.DatabaseException
 
 import scala.concurrent.ExecutionContext
 
@@ -19,6 +20,9 @@ class UserController @Inject()(userService: UserService)(implicit exec: Executio
 		userService.create(user)
 			.map(Unit => Created)
 			.recover {
+				case dbe: DatabaseException =>
+					Logger.error("Error while creating user " + user, dbe)
+					Conflict
 				case n: NodeSetNotReachable =>
 					Logger.error("Error while creating user " + user, n)
 					ServiceUnavailable
@@ -42,6 +46,9 @@ class UserController @Inject()(userService: UserService)(implicit exec: Executio
 					NotFound
 			})
 			.recover {
+				case dbe: DatabaseException =>
+					Logger.error("Error while getting user " + name, dbe)
+					Conflict
 				case n: NodeSetNotReachable =>
 					Logger.error("Error while getting user " + name, n)
 					ServiceUnavailable

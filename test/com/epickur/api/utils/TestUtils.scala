@@ -30,7 +30,7 @@ object TestUtils {
 		assert(user.zipcode == TestUtils.zipcode)
 		assert(user.state == TestUtils.state)
 		assert(user.country == TestUtils.country)
-		assert(user.allow == TestUtils.allow.toInt)
+		assert(user.allow != null)
 		assert(user.createdAt != null)
 		assert(user.updatedAt != null)
 	}
