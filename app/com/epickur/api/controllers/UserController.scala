@@ -24,13 +24,31 @@ class UserController @Inject()(userService: UserService)(implicit exec: Executio
 					ServiceUnavailable
 				case t: Throwable =>
 					Logger.error("Error while creating user " + user, t)
-					InternalServerError
+					ServiceUnavailable
 			}
 	}
 
 	def read(id: Long) = Action {
 		val user = userService.read(id)
 		Ok(Json.toJson(user))
+	}
+
+	def readByName(name: String) = Action.async { request =>
+		userService.readByName(name)
+			.map(users => {
+				if (users.nonEmpty)
+					Ok(Json.toJson(users.head))
+				else
+					NotFound
+			})
+			.recover {
+				case n: NodeSetNotReachable =>
+					Logger.error("Error while getting user " + name, n)
+					ServiceUnavailable
+				case t: Throwable =>
+					Logger.error("Error while getting user " + name, t)
+					ServiceUnavailable
+			}
 	}
 
 	def update(id: Long) = Action(parse.json) { request =>

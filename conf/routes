@@ -1,6 +1,7 @@
 # Routes
 # This file defines all application routes (Higher priority routes first)
 
-GET         /users/:id        com.epickur.api.controllers.UserController.read(id: Long)
-PUT         /users/:id        com.epickur.api.controllers.UserController.update(id: Long)
-POST        /users            com.epickur.api.controllers.UserController.create
+GET         /users/$id<[0-9]+>        com.epickur.api.controllers.UserController.read(id: Long)
+GET         /users/$name<[a-zA-Z]+>        com.epickur.api.controllers.UserController.readByName(name: String)
+PUT         /users/$id<[0-9]+>        com.epickur.api.controllers.UserController.update(id: Long)
+POST        /users                    com.epickur.api.controllers.UserController.create
