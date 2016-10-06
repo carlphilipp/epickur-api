@@ -11,6 +11,7 @@ case class User(var id: Option[String] = None,
 				var last: String,
 				var password: String,
 				var email: String,
+				var phoneNumber: String,
 				var zipCode: String,
 				var state: String,
 				var country: String,
@@ -35,6 +36,7 @@ object User {
 				last <- (json \ "last").validate[String]
 				password <- (json \ "password").validate[String]
 				email <- (json \ "email").validate[String]
+				phoneNumber <- (json \ "phoneNumber").validate[String]
 				zipCode <- (json \ "zipCode").validate[String]
 				state <- (json \ "state").validate[String]
 				country <- (json \ "country").validate[String]
@@ -44,7 +46,8 @@ object User {
 				newPassword <- (json \ "newPassword").validateOpt[String]
 				createdAt <- (json \ "createdAt").validateOpt[LocalDateTime]
 				updatedAt <- (json \ "updatedAt").validateOpt[LocalDateTime]
-			} yield new User(id, name, first, last, password, email, zipCode, state, country, allow, code, key, newPassword, createdAt, updatedAt)
+			} yield new User(id, name, first, last, password, email, phoneNumber, zipCode, state, country, allow, code,
+				key, newPassword, createdAt, updatedAt)
 		}
 	}
 
@@ -63,6 +66,7 @@ object User {
 			"first" -> user.first,
 			"last" -> user.last,
 			"email" -> user.email,
+			"phoneNumber" -> user.phoneNumber,
 			"zipCode" -> user.zipCode,
 			"state" -> user.state,
 			"country" -> user.country,
@@ -70,14 +74,14 @@ object User {
 			"updatedAt" -> user.updatedAt)
 		if (user.password != null)
 			result = result + ("password" -> Json.toJson(user.password))
-		if (user.allow != null)
-			result = result + ("allow" -> Json.toJson(user.allow))
-		if (user.code != null)
-			result = result + ("code" -> Json.toJson(user.code))
-		if (user.key != null)
-			result = result + ("key" -> Json.toJson(user.key))
-		if (user.newPassword != null)
-			result = result + ("newPassword" -> Json.toJson(user.newPassword))
+		if (user.allow.isDefined)
+			result = result + ("allow" -> Json.toJson(user.allow.get))
+		if (user.code.isDefined)
+			result = result + ("code" -> Json.toJson(user.code.get))
+		if (user.key.isDefined)
+			result = result + ("key" -> Json.toJson(user.key.get))
+		if (user.newPassword.isDefined)
+			result = result + ("newPassword" -> Json.toJson(user.newPassword.get))
 		result
 	}
 
