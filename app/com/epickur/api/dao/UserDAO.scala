@@ -3,16 +3,17 @@ package com.epickur.api.dao
 import javax.inject.{Inject, Singleton}
 
 import com.epickur.api.entities.User
+import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json.{JsObject, Json, OWrites}
 import play.modules.reactivemongo.json._
 import play.modules.reactivemongo.{MongoController, ReactiveMongoApi, ReactiveMongoComponents}
 import reactivemongo.api.ReadPreference
 import reactivemongo.play.json.collection.JSONCollection
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 @Singleton
-class UserDAO @Inject()(val reactiveMongoApi: ReactiveMongoApi)(implicit exec: ExecutionContext) extends MongoController with ReactiveMongoComponents {
+class UserDAO @Inject()(val reactiveMongoApi: ReactiveMongoApi) extends MongoController with ReactiveMongoComponents {
 
 	implicit val userToJson: OWrites[User] = User.userToJsonDB
 
