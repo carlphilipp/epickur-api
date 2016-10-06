@@ -30,12 +30,12 @@ class UserDAOTest extends PlaySpec with OneAppPerTest with MockitoSugar {
 			val user = userDAO.read(TestUtils.id.toLong)
 			//TestUtils.verifyUser(user)
 		}
-	*/}
+	}*/
 
-	"UserDAO" should {
+/*	"UserDAO" should {
 		"Update user" in {
 			val user = userDAO.update(TestUtils.user)
 			TestUtils.verifyUser(user)
 		}
-	}
+	}*/
 }

@@ -10,7 +10,7 @@ import play.api.mvc.{Action, Controller}
 import reactivemongo.core.actors.Exceptions.NodeSetNotReachable
 import reactivemongo.core.errors.DatabaseException
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UserController @Inject()(userService: UserService)(implicit exec: ExecutionContext) extends Controller {
@@ -57,9 +57,27 @@ class UserController @Inject()(userService: UserService)(implicit exec: Executio
 			}
 	}
 
-	def update(id: Long) = Action(parse.json) { request =>
+	def update(id: String) = Action.async(parse.json) { request =>
 		val user = request.body.as[User]
-		val userUpdated = userService.update(user)
-		Ok(Json.toJson(userUpdated))
+		if (validateUser(user, id)) {
+			user.id = Option.apply(id)
+			userService.update(user)
+				.map(Unit => Redirect(routes.UserController.read(user.id.get)))
+				.recover {
+					case dbe: DatabaseException =>
+						Logger.error("Error while updating user " + user, dbe)
+						Conflict
+					case n: NodeSetNotReachable =>
+						Logger.error("Error while updating user " + user, n)
+						ServiceUnavailable
+					case t: Throwable =>
+						Logger.error("Error while updating user " + user, t)
+						ServiceUnavailable
+				}
+		} else {
+			Future(BadRequest)
+		}
 	}
+
+	private def validateUser(user: User, id: String) = user.id.getOrElse(id) == id
 }

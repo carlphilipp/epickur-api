@@ -49,30 +49,37 @@ object User {
 	}
 
 	val userToJsonDB: OWrites[User] = new OWrites[User] {
-		def writes(user: User) = {
-			val result = Json.obj(
-				"_id" -> user.id,
-				"name" -> user.name,
-				"first" -> user.first,
-				"last" -> user.last,
-				"password" -> user.password,
-				"email" -> user.email,
-				"zipCode" -> user.zipCode,
-				"state" -> user.state,
-				"country" -> user.country,
-				"createdAt" -> user.createdAt,
-				"updatedAt" -> user.updatedAt
-			)
-			if (user.allow != null)
-				result + ("allow" -> Json.toJson(user.allow))
-			if (user.code != null)
-				result + ("code" -> Json.toJson(user.code))
-			if (user.key != null)
-				result + ("key" -> Json.toJson(user.key))
-			if (user.newPassword != null)
-				result + ("newPassword" -> Json.toJson(user.newPassword))
-			result
-		}
+		def writes(user: User) = generateJsonForUser(user)
 	}
+
+	def getJsonUpdatedUser(user: User): JsObject = {
+		Json.obj("$set" -> generateJsonForUser(user).-("createdAt"))
+	}
+
+	private def generateJsonForUser(user: User): JsObject = {
+		var result = Json.obj(
+			"_id" -> user.id,
+			"name" -> user.name,
+			"first" -> user.first,
+			"last" -> user.last,
+			"email" -> user.email,
+			"zipCode" -> user.zipCode,
+			"state" -> user.state,
+			"country" -> user.country,
+			"createdAt" -> user.createdAt,
+			"updatedAt" -> user.updatedAt)
+		if (user.password != null)
+			result = result + ("password" -> Json.toJson(user.password))
+		if (user.allow != null)
+			result = result + ("allow" -> Json.toJson(user.allow))
+		if (user.code != null)
+			result = result + ("code" -> Json.toJson(user.code))
+		if (user.key != null)
+			result = result + ("key" -> Json.toJson(user.key))
+		if (user.newPassword != null)
+			result = result + ("newPassword" -> Json.toJson(user.newPassword))
+		result
+	}
+
 	//implicit val jsonToUser = Json.reads[User]
 }

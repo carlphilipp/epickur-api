@@ -22,7 +22,14 @@ class UserService @Inject()(userDAO: UserDAO) {
 
 	def read(id: String): Future[List[JsObject]] = userDAO.read(id)
 
-	def readByName(name: String): Future[List[JsObject]] = userDAO.readByName(name)
-
-	def update(user: User): User = userDAO.update(user)
+	def update(user: User): Future[Unit] = {
+		user.password = null
+		user.allow = Option.empty
+		user.code = Option.empty
+		user.key = Option.empty
+		user.newPassword = Option.empty
+		user.createdAt = Option.empty
+		user.updatedAt = Option.apply(LocalDateTime.now())
+		userDAO.update(user)
+	}
 }
