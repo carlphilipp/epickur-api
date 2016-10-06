@@ -23,17 +23,7 @@ class UserController @Inject()(userService: UserService)(implicit exec: Executio
 		Logger.debug("Create user: " + user)
 		userService.create(user)
 			.map(Unit => Redirect(routes.UserController.read(user.id.get)))
-			.recover {
-				case dbe: DatabaseException =>
-					Logger.error("Error while creating user " + user, dbe)
-					Conflict
-				case n: NodeSetNotReachable =>
-					Logger.error("Error while creating user " + user, n)
-					ServiceUnavailable
-				case t: Throwable =>
-					Logger.error("Error while creating user " + user, t)
-					ServiceUnavailable
-			}
+			.recover(handleRecover(user, "creating"))
 	}
 
 	def read(id: String) = Action.async { request =>
@@ -44,17 +34,7 @@ class UserController @Inject()(userService: UserService)(implicit exec: Executio
 				else
 					NotFound
 			})
-			.recover {
-				case dbe: DatabaseException =>
-					Logger.error("Error while getting user " + id, dbe)
-					Conflict
-				case n: NodeSetNotReachable =>
-					Logger.error("Error while getting user " + id, n)
-					ServiceUnavailable
-				case t: Throwable =>
-					Logger.error("Error while getting user " + id, t)
-					ServiceUnavailable
-			}
+			.recover(handleRecover(id, "getting"))
 	}
 
 	def update(id: String) = Action.async(parse.json) { request =>
@@ -63,20 +43,22 @@ class UserController @Inject()(userService: UserService)(implicit exec: Executio
 			user.id = Option.apply(id)
 			userService.update(user)
 				.map(Unit => Redirect(routes.UserController.read(user.id.get)))
-				.recover {
-					case dbe: DatabaseException =>
-						Logger.error("Error while updating user " + user, dbe)
-						Conflict
-					case n: NodeSetNotReachable =>
-						Logger.error("Error while updating user " + user, n)
-						ServiceUnavailable
-					case t: Throwable =>
-						Logger.error("Error while updating user " + user, t)
-						ServiceUnavailable
-				}
+				.recover(handleRecover(id, "updating"))
 		} else {
 			Future(BadRequest)
 		}
+	}
+
+	private def handleRecover(obj: Any, log: String): PartialFunction[Throwable, Status] = {
+		case dbe: DatabaseException =>
+			Logger.error(s"Error while $log user $obj", dbe)
+			Conflict
+		case n: NodeSetNotReachable =>
+			Logger.error(s"Error while $log user $obj", n)
+			ServiceUnavailable
+		case t: Throwable =>
+			Logger.error(s"Error while $log user $obj", t)
+			ServiceUnavailable
 	}
 
 	private def validateUser(user: User, id: String) = user.id.getOrElse(id) == id
