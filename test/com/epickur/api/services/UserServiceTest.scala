@@ -25,12 +25,12 @@ class UserServiceTest extends PlaySpec with OneAppPerTest with MockitoSugar {
 		}
 	}
 
-	"UserService" should {
+/*	"UserService" should {
 		"Get user" in {
 			val user = userService.read(TestUtils.id.toLong)
 			//TestUtils.verifyUser(user)
 		}
-	}
+	}*/
 
 	"UserService" should {
 		"Update user" in {

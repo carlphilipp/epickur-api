@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 import play.api.libs.json.Reads._
 import play.api.libs.json._
 
-case class User(var id: Option[Long] = None,
+case class User(var id: Option[String] = None,
 				var name: String,
 				var first: String,
 				var last: String,
@@ -18,16 +18,16 @@ case class User(var id: Option[Long] = None,
 				var code: Option[String] = None,
 				var key: Option[String] = None,
 				var newPassword: Option[String] = None,
-				var createdAt: LocalDateTime = LocalDateTime.now(),
-				var updatedAt: LocalDateTime = LocalDateTime.now())
+				var createdAt: Option[LocalDateTime] = None,
+				var updatedAt: Option[LocalDateTime] = None)
 
 object User {
 	implicit val jsonToUserDB: Reads[User] = new Reads[User] {
 		def reads(json: JsValue): JsResult[User] = {
 			for {
 				id <- {
-					val id = (json \ "id").validateOpt[Long]
-					if (id.isSuccess && id.get.isDefined) id else (json \ "_id").validateOpt[Long]
+					val id = (json \ "id").validateOpt[String]
+					if (id.isSuccess && id.get.isDefined) id else (json \ "_id").validateOpt[String]
 				}
 				name <- (json \ "name").validate[String]
 				first <- (json \ "first").validate[String]
@@ -41,8 +41,8 @@ object User {
 				code <- (json \ "code").validateOpt[String]
 				key <- (json \ "key").validateOpt[String]
 				newPassword <- (json \ "newPassword").validateOpt[String]
-				createdAt <- (json \ "createdAt").validate[LocalDateTime]
-				updatedAt <- (json \ "updatedAt").validate[LocalDateTime]
+				createdAt <- (json \ "createdAt").validateOpt[LocalDateTime]
+				updatedAt <- (json \ "updatedAt").validateOpt[LocalDateTime]
 			} yield new User(id, name, first, last, password, email, zipCode, state, country, allow, code, key, newPassword, createdAt, updatedAt)
 		}
 	}

@@ -19,9 +19,9 @@ class UserController @Inject()(userService: UserService)(implicit exec: Executio
 
 	def create = Action.async(parse.json) { request =>
 		val user = request.body.as[User]
-		Logger.info("Create user: " + user)
+		Logger.debug("Create user: " + user)
 		userService.create(user)
-			.map(Unit => Created)
+			.map(Unit => Redirect(routes.UserController.read(user.id.get)))
 			.recover {
 				case dbe: DatabaseException =>
 					Logger.error("Error while creating user " + user, dbe)
@@ -35,7 +35,7 @@ class UserController @Inject()(userService: UserService)(implicit exec: Executio
 			}
 	}
 
-	def read(id: Long) = Action.async { request =>
+	def read(id: String) = Action.async { request =>
 		userService.read(id)
 			.map(users => {
 				if (users.nonEmpty)
@@ -52,27 +52,6 @@ class UserController @Inject()(userService: UserService)(implicit exec: Executio
 					ServiceUnavailable
 				case t: Throwable =>
 					Logger.error("Error while getting user " + id, t)
-					ServiceUnavailable
-			}
-	}
-
-	def readByName(name: String) = Action.async { request =>
-		userService.readByName(name)
-			.map(users => {
-				if (users.nonEmpty) {
-					Ok(Json.toJson(users.head.as[User]))
-				} else
-					NotFound
-			})
-			.recover {
-				case dbe: DatabaseException =>
-					Logger.error("Error while getting user " + name, dbe)
-					Conflict
-				case n: NodeSetNotReachable =>
-					Logger.error("Error while getting user " + name, n)
-					ServiceUnavailable
-				case t: Throwable =>
-					Logger.error("Error while getting user " + name, t)
 					ServiceUnavailable
 			}
 	}
