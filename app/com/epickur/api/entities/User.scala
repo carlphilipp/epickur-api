@@ -22,17 +22,19 @@ case class User(var id: Option[Long] = None,
 				var updatedAt: LocalDateTime = LocalDateTime.now())
 
 object User {
-
-	implicit val jsonToUser: Reads[User] = new Reads[User] {
+	implicit val jsonToUserDB: Reads[User] = new Reads[User] {
 		def reads(json: JsValue): JsResult[User] = {
 			for {
-				id <- (json \ "id").validateOpt[Long]
+				id <- {
+					val id = (json \ "id").validateOpt[Long]
+					if (id.isSuccess && id.get.isDefined) id else (json \ "_id").validateOpt[Long]
+				}
 				name <- (json \ "name").validate[String]
 				first <- (json \ "first").validate[String]
 				last <- (json \ "last").validate[String]
 				password <- (json \ "password").validate[String]
 				email <- (json \ "email").validate[String]
-				zipCode <- (json \ "zipcode").validate[String]
+				zipCode <- (json \ "zipCode").validate[String]
 				state <- (json \ "state").validate[String]
 				country <- (json \ "country").validate[String]
 				allow <- (json \ "allow").validateOpt[Int]
@@ -45,14 +47,15 @@ object User {
 		}
 	}
 
-	implicit val userToJson = new OWrites[User] {
+	implicit val userToJsonDB: OWrites[User] = new OWrites[User] {
 		def writes(user: User) = Json.obj(
 			"_id" -> user.id,
 			"name" -> user.name,
 			"first" -> user.first,
+			"last" -> user.last,
 			"password" -> user.password,
 			"email" -> user.email,
-			"zipcode" -> user.zipCode,
+			"zipCode" -> user.zipCode,
 			"state" -> user.state,
 			"country" -> user.country,
 			"allow" -> user.allow,
@@ -63,6 +66,6 @@ object User {
 			"updatedAt" -> user.updatedAt
 		)
 	}
-	//implicit val userToJson = Json.writes[User]
 	//implicit val jsonToUser = Json.reads[User]
+	val userToJsonWeb = Json.writes[User]
 }

@@ -15,8 +15,11 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class UserController @Inject()(userService: UserService)(implicit exec: ExecutionContext) extends Controller {
 
+	implicit val userToJson = User.userToJsonWeb
+
 	def create = Action.async(parse.json) { request =>
 		val user = request.body.as[User]
+		Logger.info("Create user: " + user)
 		userService.create(user)
 			.map(Unit => Created)
 			.recover {
@@ -36,7 +39,7 @@ class UserController @Inject()(userService: UserService)(implicit exec: Executio
 		userService.read(id)
 			.map(users => {
 				if (users.nonEmpty)
-					Ok(Json.toJson(users.head))
+					Ok(Json.toJson(users.head.as[User]))
 				else
 					NotFound
 			})
@@ -56,9 +59,9 @@ class UserController @Inject()(userService: UserService)(implicit exec: Executio
 	def readByName(name: String) = Action.async { request =>
 		userService.readByName(name)
 			.map(users => {
-				if (users.nonEmpty)
-					Ok(Json.toJson(users.head))
-				else
+				if (users.nonEmpty) {
+					Ok(Json.toJson(users.head.as[User]))
+				} else
 					NotFound
 			})
 			.recover {
