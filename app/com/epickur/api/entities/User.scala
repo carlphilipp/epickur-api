@@ -22,7 +22,8 @@ case class User(var id: Option[String] = None,
 				var updatedAt: Option[LocalDateTime] = None)
 
 object User {
-	implicit val jsonToUserDB: Reads[User] = new Reads[User] {
+	val userToJsonWeb: OWrites[User] = Json.writes[User]
+	val jsonToUserWeb: Reads[User] = new Reads[User] {
 		def reads(json: JsValue): JsResult[User] = {
 			for {
 				id <- {
@@ -47,25 +48,31 @@ object User {
 		}
 	}
 
-	implicit val userToJsonDB: OWrites[User] = new OWrites[User] {
-		def writes(user: User) = Json.obj(
-			"_id" -> user.id,
-			"name" -> user.name,
-			"first" -> user.first,
-			"last" -> user.last,
-			"password" -> user.password,
-			"email" -> user.email,
-			"zipCode" -> user.zipCode,
-			"state" -> user.state,
-			"country" -> user.country,
-			"allow" -> user.allow,
-			"code" -> user.code,
-			"key" -> user.key,
-			"newPassword" -> user.newPassword,
-			"createdAt" -> user.createdAt,
-			"updatedAt" -> user.updatedAt
-		)
+	val userToJsonDB: OWrites[User] = new OWrites[User] {
+		def writes(user: User) = {
+			val result = Json.obj(
+				"_id" -> user.id,
+				"name" -> user.name,
+				"first" -> user.first,
+				"last" -> user.last,
+				"password" -> user.password,
+				"email" -> user.email,
+				"zipCode" -> user.zipCode,
+				"state" -> user.state,
+				"country" -> user.country,
+				"createdAt" -> user.createdAt,
+				"updatedAt" -> user.updatedAt
+			)
+			if (user.allow != null)
+				result + ("allow" -> Json.toJson(user.allow))
+			if (user.code != null)
+				result + ("code" -> Json.toJson(user.code))
+			if (user.key != null)
+				result + ("key" -> Json.toJson(user.key))
+			if (user.newPassword != null)
+				result + ("newPassword" -> Json.toJson(user.newPassword))
+			result
+		}
 	}
 	//implicit val jsonToUser = Json.reads[User]
-	val userToJsonWeb = Json.writes[User]
 }
