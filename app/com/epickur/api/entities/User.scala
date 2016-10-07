@@ -60,20 +60,19 @@ object User {
 	}
 
 	private def generateJsonForUser(user: User): JsObject = {
+		// TODO it gotta have a better way to do that
 		var result = Json.obj(
 			"_id" -> user.id,
 			"name" -> user.name,
 			"first" -> user.first,
-			"last" -> user.last,
-			"email" -> user.email,
-			"phoneNumber" -> user.phoneNumber,
-			"zipCode" -> user.zipCode,
-			"state" -> user.state,
-			"country" -> user.country,
-			"createdAt" -> user.createdAt,
-			"updatedAt" -> user.updatedAt)
+			"last" -> user.last)
 		if (user.password != null)
 			result = result + ("password" -> Json.toJson(user.password))
+		result = result + ("email" -> Json.toJson(user.email))
+		result = result + ("phoneNumber" -> Json.toJson(user.phoneNumber))
+		result = result + ("zipCode" -> Json.toJson(user.zipCode))
+		result = result + ("state" -> Json.toJson(user.state))
+		result = result + ("country" -> Json.toJson(user.country))
 		if (user.allow.isDefined)
 			result = result + ("allow" -> Json.toJson(user.allow.get))
 		if (user.code.isDefined)
@@ -82,6 +81,8 @@ object User {
 			result = result + ("key" -> Json.toJson(user.key.get))
 		if (user.newPassword.isDefined)
 			result = result + ("newPassword" -> Json.toJson(user.newPassword.get))
+		result = result + ("createdAt" -> Json.toJson(user.createdAt.get))
+		result = result + ("updatedAt" -> Json.toJson(user.updatedAt.get))
 		result
 	}
 
