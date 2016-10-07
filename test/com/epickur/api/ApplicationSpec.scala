@@ -20,7 +20,7 @@ class ApplicationSpec extends PlaySpec with OneAppPerTest {
 		}
 	}
 
-	"User" should {
+	/*"User" should {
 		"Get user" in {
 			val home = route(app, FakeRequest(GET, s"/users/${TestUtils.id}")).get
 			status(home) mustBe OK
@@ -56,5 +56,5 @@ class ApplicationSpec extends PlaySpec with OneAppPerTest {
 			val user = contentAsJson(home).as[User]
 			TestUtils.verifyUser(user)
 		}
-	}
+	}*/
 }
