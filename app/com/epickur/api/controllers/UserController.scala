@@ -6,8 +6,8 @@ import com.epickur.api.entities.User
 import com.epickur.api.services.UserService
 import play.api.Logger
 import play.api.libs.concurrent.Execution.Implicits._
-import play.api.libs.json.{Json, OWrites, Reads}
-import play.api.mvc.{Action, Controller}
+import play.api.libs.json.{JsError, Json, OWrites, Reads}
+import play.api.mvc.{Action, Controller, Result}
 import reactivemongo.core.actors.Exceptions.NodeSetNotReachable
 import reactivemongo.core.errors.DatabaseException
 
@@ -16,15 +16,16 @@ import scala.concurrent.Future
 @Singleton
 class UserController @Inject()(userService: UserService) extends Controller {
 
+	implicit val errorMessageToJson: OWrites[ErrorMessage] = Json.writes[ErrorMessage]
 	implicit val userToJson: OWrites[User] = User.userToJsonWeb
 	implicit val jsonToUser: Reads[User] = User.jsonToUserWeb
 
 	def create = Action.async(parse.json) { request =>
-		val user = request.body.as[User]
-		Logger.debug("Create user: " + user)
-		userService.create(user)
-			.map(Unit => Redirect(routes.UserController.read(user.id.get)))
-			.recover(handleRecover(user, "creating"))
+		request.body.validate[User].map { user =>
+			userService.create(user)
+				.map(Unit => Redirect(routes.UserController.read(user.id.get)))
+				.recover(handleRecover(user, "creating"))
+		}.recoverTotal(e => handleTotalRecover(e))
 	}
 
 	def read(id: String) = Action.async { request =>
@@ -39,15 +40,16 @@ class UserController @Inject()(userService: UserService) extends Controller {
 	}
 
 	def update(id: String) = Action.async(parse.json) { request =>
-		val user = request.body.as[User]
-		if (validateUser(user, id)) {
-			user.id = Option.apply(id)
-			userService.update(user)
-				.map(Unit => Redirect(routes.UserController.read(user.id.get)))
-				.recover(handleRecover(id, "updating"))
-		} else {
-			Future(BadRequest)
-		}
+		request.body.validate[User].map{ user =>
+			if (validateUser(user, id)) {
+				user.id = Option.apply(id)
+				userService.update(user)
+					.map(Unit => Redirect(routes.UserController.read(user.id.get)))
+					.recover(handleRecover(id, "updating"))
+			} else {
+				Future(BadRequest)
+			}
+		}.recoverTotal(e => handleTotalRecover(e))
 	}
 
 	private def handleRecover(obj: Any, log: String): PartialFunction[Throwable, Status] = {
@@ -62,5 +64,12 @@ class UserController @Inject()(userService: UserService) extends Controller {
 			ServiceUnavailable
 	}
 
-	private def validateUser(user: User, id: String) = user.id.getOrElse(id) == id
+	private def handleTotalRecover(jsError: JsError): Future[Result] = {
+		Future(BadRequest(Json.toJson(ErrorMessage(jsError.errors.head._2.head.message))))
+	}
+
+	private def validateUser(user: User, id: String): Boolean = user.id.getOrElse(id) == id
 }
+
+case class ErrorMessage(var message: String)
+
