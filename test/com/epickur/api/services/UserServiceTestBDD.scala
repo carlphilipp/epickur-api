@@ -29,7 +29,6 @@ class UserServiceTestBDD extends FeatureSpec with GivenWhenThen with Matchers wi
 			When("passing it to the create service")
 			val actual = userService.create(user)
 
-
 			Then("the service returns a Future[unit]")
 			assert(actual.isInstanceOf[Future[Unit]])
 

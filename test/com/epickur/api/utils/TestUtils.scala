@@ -1,7 +1,7 @@
 package com.epickur.api.utils
 
 import com.epickur.api.entities.User
-import play.api.libs.json.{Json, Reads}
+import play.api.libs.json._
 
 object TestUtils {
 
@@ -13,7 +13,8 @@ object TestUtils {
 	val last = "harmant"
 	val password = "mypassword"
 	val email = "cp.harmant@gmail.com"
-	val phoneNumber = "312-841-1111"
+	val countryCode = "1"
+	val nationalNumber = "3128411111"
 	val zipCode = "60614"
 	val state = "Illinois"
 	val country = "USA"
@@ -21,7 +22,7 @@ object TestUtils {
 	val createdAt = "2016-10-01T19:41:00.683"
 	val updatedAt = "2016-10-01T19:41:00.683"
 
-	val userAsString = s"""{"id":$id,"name":"$name","first":"$first","last":"$last","password":"$password","email":"$email","phoneNumber":"$phoneNumber","zipode":"$zipCode","state":"$state","country":"$country","allow":$allow,"createdAt":"$createdAt","updatedAt":"$updatedAt"}"""
+	val userAsString = s"""{"id":"$id","name":"$name","first":"$first","last":"$last","password":"$password","email":"$email","phoneNumber":{"nationalNumber":$nationalNumber,"countryCode":$countryCode},"zipCode":"$zipCode","state":"$state","country":"$country","allow":$allow,"createdAt":"$createdAt","updatedAt":"$updatedAt"}"""
 	val user = Json.parse(userAsString).as[User]
 
 	def verifyUser(user: User) = {
