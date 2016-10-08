@@ -17,7 +17,7 @@ case class User(var id: Option[String] = None,
 				var state: String,
 				var country: String,
 				var role: Option[Role],
-				var allow: Option[Int] = None,
+				var allow: Option[Boolean] = None,
 				var code: Option[String] = None,
 				var key: Option[String] = None,
 				var newPassword: Option[String] = None,
@@ -84,7 +84,7 @@ object User {
 				state <- (json \ "state").validate[String]
 				country <- (json \ "country").validate[String]
 				role <- (json \ "role").validateOpt[Role]
-				allow <- (json \ "allow").validateOpt[Int]
+				allow <- (json \ "allow").validateOpt[Boolean]
 				code <- (json \ "code").validateOpt[String]
 				key <- (json \ "key").validateOpt[String]
 				newPassword <- (json \ "newPassword").validateOpt[String]

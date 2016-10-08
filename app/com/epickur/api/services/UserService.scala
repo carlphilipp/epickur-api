@@ -15,6 +15,7 @@ class UserService @Inject()(userDAO: UserDAO) {
 
 	def create(user: User): Future[Unit] = {
 		user.id = Option.apply(BSONObjectID.generate.stringify)
+		user.allow = Option.apply(false)
 		user.createdAt = Option.apply(LocalDateTime.now())
 		user.updatedAt = Option.apply(LocalDateTime.now())
 		userDAO.create(user)

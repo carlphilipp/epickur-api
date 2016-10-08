@@ -18,7 +18,7 @@ object TestUtils {
 	val zipCode = "60614"
 	val state = "Illinois"
 	val country = "USA"
-	val allow = "0"
+	val allow = false
 	val createdAt = "2016-10-01T19:41:00.683"
 	val updatedAt = "2016-10-01T19:41:00.683"
 
