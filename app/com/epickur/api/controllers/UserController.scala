@@ -23,7 +23,10 @@ class UserController @Inject()(userService: UserService) extends Controller {
 	def create = Action.async(parse.json) { request =>
 		request.body.validate[User].map { user =>
 			userService.create(user)
-				.map(Unit => Redirect(routes.UserController.read(user.id.get)))
+				.map(Unit => {
+					// TODO generate code and send an email in a async way
+					Redirect(routes.UserController.read(user.id.get))
+				})
 				.recover(handleRecover(user, "creating"))
 		}.recoverTotal(e => handleTotalRecover(e))
 	}

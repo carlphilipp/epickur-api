@@ -23,8 +23,6 @@ class UserService @Inject()(userDAO: UserDAO) {
 
 		val passwordManager = new PasswordManager(user.password)
 		user.password = passwordManager.createDBPassword
-		val temporaryCode = passwordManager.getTemporaryRegistrationCode(user.name, user.email)
-		// TODO Send email to user containing temp code
 
 		userDAO.create(user)
 	}
