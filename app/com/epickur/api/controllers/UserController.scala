@@ -65,6 +65,7 @@ class UserController @Inject()(userService: UserService) extends Controller {
 	}
 
 	private def handleTotalRecover(jsError: JsError): Future[Result] = {
+		Logger.error(s"Error while converting to object: $jsError")
 		Future(BadRequest(Json.toJson(ErrorMessage(jsError.errors.head._2.head.message))))
 	}
 

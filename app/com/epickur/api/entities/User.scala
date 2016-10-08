@@ -2,9 +2,9 @@ package com.epickur.api.entities
 
 import java.time.LocalDateTime
 
+import com.epickur.api.entities.Role.Role
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber
-import play.api.libs.json.Reads._
-import play.api.libs.json.{JsObject, OWrites, _}
+import play.api.libs.json._
 
 case class User(var id: Option[String] = None,
 				var name: String,
@@ -16,6 +16,7 @@ case class User(var id: Option[String] = None,
 				var zipCode: String,
 				var state: String,
 				var country: String,
+				var role: Option[Role],
 				var allow: Option[Int] = None,
 				var code: Option[String] = None,
 				var key: Option[String] = None,
@@ -23,7 +24,27 @@ case class User(var id: Option[String] = None,
 				var createdAt: Option[LocalDateTime] = None,
 				var updatedAt: Option[LocalDateTime] = None)
 
+object Role extends Enumeration {
+	type Role = Value
+	val admin, user, super_user, epickur_web = Value
+}
+
 object User {
+	// TODO probably move that function somewhere else
+	def enumReads[E <: Enumeration](enum: E): Reads[E#Value] = new Reads[E#Value] {
+		def reads(json: JsValue): JsResult[E#Value] = json match {
+			case JsString(s) =>
+				try {
+					JsSuccess(enum.withName(s.toLowerCase))
+				} catch {
+					case _: NoSuchElementException => JsError(s"Enumeration expected of type: '${enum.getClass}', but it does not appear to contain the value: '$s'")
+				}
+			case _ => JsError("String value expected")
+		}
+	}
+
+	implicit val jsonToRole: Reads[Role.Value] = enumReads(Role)
+
 	implicit val phoneNumberToJson: OWrites[PhoneNumber] = new OWrites[PhoneNumber] {
 		def writes(phoneNumber: PhoneNumber): JsObject = {
 			Json.obj(
@@ -62,6 +83,7 @@ object User {
 				zipCode <- (json \ "zipCode").validate[String]
 				state <- (json \ "state").validate[String]
 				country <- (json \ "country").validate[String]
+				role <- (json \ "role").validateOpt[Role]
 				allow <- (json \ "allow").validateOpt[Int]
 				code <- (json \ "code").validateOpt[String]
 				key <- (json \ "key").validateOpt[String]
@@ -69,8 +91,8 @@ object User {
 				createdAt <- (json \ "createdAt").validateOpt[LocalDateTime]
 				updatedAt <- (json \ "updatedAt").validateOpt[LocalDateTime]
 			} yield {
-				new User(id, name, first, last, password, email, phoneNumber, zipCode, state, country, allow, code,
-					key, newPassword, createdAt, updatedAt)
+				new User(id, name, first, last, password, email, phoneNumber, zipCode, state, country, role, allow,
+					code, key, newPassword, createdAt, updatedAt)
 			}
 		}
 	}
@@ -97,6 +119,8 @@ object User {
 		json = json + ("zipCode" -> Json.toJson(user.zipCode))
 		json = json + ("state" -> Json.toJson(user.state))
 		json = json + ("country" -> Json.toJson(user.country))
+		if (user.role.isDefined)
+			json = json + ("role" -> Json.toJson(user.role))
 		if (user.allow.isDefined)
 			json = json + ("allow" -> Json.toJson(user.allow.get))
 		if (user.code.isDefined)
@@ -105,8 +129,10 @@ object User {
 			json = json + ("key" -> Json.toJson(user.key.get))
 		if (user.newPassword.isDefined)
 			json = json + ("newPassword" -> Json.toJson(user.newPassword.get))
-		json = json + ("createdAt" -> Json.toJson(user.createdAt.get))
-		json = json + ("updatedAt" -> Json.toJson(user.updatedAt.get))
+		if (user.createdAt.isDefined)
+			json = json + ("createdAt" -> Json.toJson(user.createdAt.get))
+		if (user.updatedAt.isDefined)
+			json = json + ("updatedAt" -> Json.toJson(user.updatedAt.get))
 		json
 	}
 

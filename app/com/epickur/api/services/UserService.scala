@@ -24,6 +24,7 @@ class UserService @Inject()(userDAO: UserDAO) {
 
 	def update(user: User): Future[Unit] = {
 		user.password = null
+		user.role = Option.empty
 		user.allow = Option.empty
 		user.code = Option.empty
 		user.key = Option.empty
