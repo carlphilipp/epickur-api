@@ -2,12 +2,13 @@ package com.epickur.api.utils
 
 import com.epickur.api.entities.User
 import play.api.libs.json._
+import reactivemongo.bson.BSONObjectID
 
 object TestUtils {
 
 	implicit val jsonToUser: Reads[User] = User.jsonToUserWeb
 
-	val id = "123787891"
+	val id = BSONObjectID.generate.stringify
 	val name = "carlphilipp"
 	val first = "carl"
 	val last = "harmant"
