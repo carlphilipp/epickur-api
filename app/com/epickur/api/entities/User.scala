@@ -18,7 +18,6 @@ case class User(var id: Option[String] = None,
 				var country: String,
 				var role: Option[Role],
 				var allow: Option[Boolean] = None,
-				var code: Option[String] = None,
 				var key: Option[String] = None,
 				var newPassword: Option[String] = None,
 				var createdAt: Option[LocalDateTime] = None,
@@ -85,14 +84,13 @@ object User {
 				country <- (json \ "country").validate[String]
 				role <- (json \ "role").validateOpt[Role]
 				allow <- (json \ "allow").validateOpt[Boolean]
-				code <- (json \ "code").validateOpt[String]
 				key <- (json \ "key").validateOpt[String]
 				newPassword <- (json \ "newPassword").validateOpt[String]
 				createdAt <- (json \ "createdAt").validateOpt[LocalDateTime]
 				updatedAt <- (json \ "updatedAt").validateOpt[LocalDateTime]
 			} yield {
 				new User(id, name, first, last, password, email, phoneNumber, zipCode, state, country, role, allow,
-					code, key, newPassword, createdAt, updatedAt)
+					key, newPassword, createdAt, updatedAt)
 			}
 		}
 	}
@@ -123,8 +121,6 @@ object User {
 			json = json + ("role" -> Json.toJson(user.role))
 		if (user.allow.isDefined)
 			json = json + ("allow" -> Json.toJson(user.allow.get))
-		if (user.code.isDefined)
-			json = json + ("code" -> Json.toJson(user.code.get))
 		if (user.key.isDefined)
 			json = json + ("key" -> Json.toJson(user.key.get))
 		if (user.newPassword.isDefined)
