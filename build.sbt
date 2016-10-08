@@ -8,6 +8,7 @@ scalaVersion := "2.11.7"
 
 resolvers += DefaultMavenRepository
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
+resolvers ++= Seq("RoundEights" at "http://maven.spikemark.net/roundeights")
 
 libraryDependencies ++= Seq(
 	jdbc,
@@ -20,4 +21,5 @@ libraryDependencies ++= Seq(
 	"org.specs2" %% "specs2-core" % "3.0" % Test,
 	"org.specs2" %% "specs2-mock" % "3.6.5" % Test
 )
+	libraryDependencies ++= Seq("com.roundeights" %% "hasher" % "1.2.0")
 fork in run := true
