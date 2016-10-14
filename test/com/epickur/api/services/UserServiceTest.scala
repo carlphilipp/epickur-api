@@ -60,7 +60,7 @@ class UserServiceTest extends FeatureSpec with GivenWhenThen with Matchers with 
 			Then("the service returns a Future[Unit]")
 			assert(actual.isInstanceOf[Future[Unit]])
 
-			Then("the dao layer has been called for user read")
+			Then("the dao layer has been called for user update")
 			verify(userDAO).update(TestUtils.user)
 		}
 	}

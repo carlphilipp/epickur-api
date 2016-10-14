@@ -24,7 +24,7 @@ class UserController @Inject()(userService: UserService) extends Controller {
 		request.body.validate[User].map { user =>
 			userService.create(user)
 				.map(Unit => {
-					// TODO generate code and send an email in a async way
+					// TODO generate code and send an email in an async way
 					Redirect(routes.UserController.read(user.id.get))
 				})
 				.recover(handleRecover(user, "creating"))
