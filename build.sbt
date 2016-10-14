@@ -21,5 +21,5 @@ libraryDependencies ++= Seq(
 	"org.specs2" %% "specs2-core" % "3.0" % Test,
 	"org.specs2" %% "specs2-mock" % "3.6.5" % Test
 )
-	libraryDependencies ++= Seq("com.roundeights" %% "hasher" % "1.2.0")
+libraryDependencies ++= Seq("com.roundeights" %% "hasher" % "1.2.0")
 fork in run := true
