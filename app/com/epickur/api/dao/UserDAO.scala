@@ -19,9 +19,15 @@ class UserDAO @Inject()(val reactiveMongoApi: ReactiveMongoApi) extends MongoCon
 
 	def userCollection: Future[JSONCollection] = database.map(_.collection[JSONCollection]("users"))
 
-	def create(user: User): Future[Unit] = userCollection.flatMap(_.insert(user)).map(_ => {})
+	def create(user: User): Future[Unit] = {
+		userCollection.flatMap(_.insert(user)).map(_ => {})
+	}
 
-	def read(id: String): Future[List[JsObject]] = userCollection.flatMap(_.find(Json.obj("_id" -> id)).cursor[JsObject](ReadPreference.primary).collect[List](1))
+	def read(id: String): Future[List[JsObject]] = {
+		userCollection.flatMap(_.find(Json.obj("_id" -> id)).cursor[JsObject](ReadPreference.primary).collect[List](1))
+	}
 
-	def update(user: User): Future[Unit] = userCollection.flatMap(_.update(Json.obj("_id" -> user.id.get), User.getJsonUpdatedUser(user))).map(_ => {})
+	def update(user: User): Future[Unit] = {
+		userCollection.flatMap(_.update(Json.obj("_id" -> user.id.get), User.getJsonUpdatedUser(user))).map(_ => {})
+	}
 }
