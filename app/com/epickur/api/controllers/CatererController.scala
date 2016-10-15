@@ -4,6 +4,7 @@ import javax.inject.{Inject, Singleton}
 
 import com.epickur.api.entities.Caterer
 import com.epickur.api.services.CatererService
+import play.Logger
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json.{Json, OWrites, Reads}
 import play.api.mvc.Action
@@ -43,7 +44,7 @@ class CatererController @Inject()(catererService: CatererService) extends Contro
 			if (validateCaterer(caterer, id)) {
 				caterer.id = Option.apply(id)
 				catererService.update(caterer)
-					.map(Unit => Redirect(routes.UserController.read(caterer.id.get)))
+					.map(Unit => Redirect(routes.CatererController.read(caterer.id.get)))
 					.recover(handleRecover(id, "updating"))
 			} else {
 				Future(BadRequest)
