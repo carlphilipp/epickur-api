@@ -76,17 +76,21 @@ object Caterer {
 	}
 
 	private def generateJsonForCaterer(caterer: Caterer): JsObject = {
-		Json.obj(
+		var json = Json.obj(
 			"_id" -> caterer.id,
+			"name" -> caterer.name,
 			"description" -> caterer.description,
 			"manager" -> caterer.manager,
 			"email" -> caterer.email,
 			//"phoneNumber" -> Json.toJson(caterer.phoneNumber),
 			//"location" -> Json.toJson(caterer.location),
 			//"workingTimes" -> Json.toJson(caterer.workingTimes),
-			"createdBy" -> caterer.createdBy,
-			"createdAt" -> Json.toJson(caterer.createdAt.get),
-			"updatedAt" -> Json.toJson(caterer.updatedAt.get)
+			"createdBy" -> caterer.createdBy
 		)
+		if (caterer.createdAt.isDefined)
+			json = json + ("createdAt" -> Json.toJson(caterer.createdAt.get))
+		if (caterer.updatedAt.isDefined)
+			json = json + ("updatedAt" -> Json.toJson(caterer.updatedAt.get))
+		json
 	}
 }
