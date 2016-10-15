@@ -1,4 +1,4 @@
-package com.epickur.api
+package com.epickur.api.controllers
 
 import com.epickur.api.entities.User
 import com.epickur.api.utils.TestUtils
@@ -15,25 +15,15 @@ import reactivemongo.bson.BSONObjectID
   * You can mock out a whole application including requests, plugins etc.
   * For more information, consult the wiki.
   */
-class ApplicationSpec extends FeatureSpec with OneAppPerTest with GivenWhenThen with Matchers {
+class UserControllerSpec extends FeatureSpec with OneAppPerTest with GivenWhenThen with Matchers {
 
 	implicit val userToJson: OWrites[User] = User.userToJsonWeb
 	implicit val jsonToUser: Reads[User] = User.jsonToUserWeb
 
 	info("As a consumer of the API")
-	info("I want to be able to verify that basic features are working")
+	info("I want to be able to verify that the user controller is working properly")
 
-	feature("Routes") {
-		scenario("Random resource access") {
-			Given("a resource that does not exit")
-			val resource = "/boomz"
-
-			When("trying to access the resource")
-			val request = route(app, FakeRequest(GET, resource)).get
-
-			Then("the status should be 404")
-			status(request) mustBe NOT_FOUND
-		}
+	feature("User Controller") {
 
 		scenario("Get user that does not exist") {
 			Given("a random user id")

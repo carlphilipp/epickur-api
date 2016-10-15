@@ -4,7 +4,6 @@ import javax.inject.{Inject, Singleton}
 
 import com.epickur.api.entities.Caterer
 import com.epickur.api.services.CatererService
-import play.Logger
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json.{Json, OWrites, Reads}
 import play.api.mvc.Action
@@ -20,10 +19,7 @@ class CatererController @Inject()(catererService: CatererService) extends Contro
 	def create = Action.async(parse.json) { request =>
 		request.body.validate[Caterer].map { caterer =>
 			catererService.create(caterer)
-				.map(Unit => {
-					// TODO generate code and send an email in an async way
-					Redirect(routes.CatererController.read(caterer.id.get))
-				})
+				.map(Unit => Redirect(routes.CatererController.read(caterer.id.get)))
 				.recover(handleRecover(caterer, "creating"))
 		}.recoverTotal(e => handleTotalRecover(e))
 	}

@@ -1,6 +1,6 @@
 package com.epickur.api.utils
 
-import com.epickur.api.entities.User
+import com.epickur.api.entities.{Role, User}
 import play.api.libs.json._
 import reactivemongo.bson.BSONObjectID
 
@@ -27,16 +27,20 @@ object TestUtils {
 	val user = Json.parse(userAsString).as[User]
 
 	def verifyUser(user: User) = {
-		assert(user.id.get == TestUtils.id.toString)
+		assert(user.id.isDefined)
 		assert(user.name == TestUtils.name)
 		assert(user.first == TestUtils.first)
 		assert(user.last == TestUtils.last)
-		assert(user.password == TestUtils.password)
+		assert(user.password != null)
+		assert(user.password != TestUtils.password)
 		assert(user.email == TestUtils.email)
 		assert(user.zipCode == TestUtils.zipCode)
 		assert(user.state == TestUtils.state)
 		assert(user.country == TestUtils.country)
-		assert(user.allow != null)
+		assert(user.role.isDefined)
+		assert(user.role.get == Role.user)
+		assert(user.allow.isDefined)
+		assert(!user.allow.get)
 		assert(user.createdAt != null)
 		assert(user.updatedAt != null)
 	}

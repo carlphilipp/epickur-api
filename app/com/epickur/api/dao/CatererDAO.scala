@@ -3,7 +3,6 @@ package com.epickur.api.dao
 import javax.inject.{Inject, Singleton}
 
 import com.epickur.api.entities.Caterer
-import play.Logger
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json.{Json, OWrites}
 import play.modules.reactivemongo.json.JsObjectDocumentWriter
