@@ -13,7 +13,6 @@ import scala.concurrent.Future
 @Singleton
 class UserController @Inject()(userService: UserService) extends Controller {
 
-
 	implicit val userToJson: OWrites[User] = User.userToJsonWeb
 	implicit val jsonToUser: Reads[User] = User.jsonToUserWeb
 

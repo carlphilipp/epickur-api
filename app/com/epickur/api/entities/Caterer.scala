@@ -3,16 +3,16 @@ package com.epickur.api.entities
 import java.time.LocalDateTime
 
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber
-import play.api.libs.json.{JsObject, Json, OWrites}
+import play.api.libs.json._
 
 case class Caterer(var id: Option[String] = None,
 				   var name: String,
 				   var description: String,
 				   var manager: String,
 				   var email: String,
-				   var phoneNumber: PhoneNumber,
-				   var location: Location,
-				   var workingTimes: WorkingTimes,
+				   //var phoneNumber: PhoneNumber,
+				   //var location: Location,
+				   //var workingTimes: WorkingTimes,
 				   var createdBy: String,
 				   var createdAt: Option[LocalDateTime] = None,
 				   var updatedAt: Option[LocalDateTime] = None)
@@ -43,6 +43,30 @@ case class Hours(var mon: Seq[TimeFrame],
 case class TimeFrame(var open: Int, var close: Int)
 
 object Caterer {
+	val catererToJsonWeb: OWrites[Caterer] = Json.writes[Caterer]
+	val jsonToCatererWeb: Reads[Caterer] = new Reads[Caterer] {
+		def reads(json: JsValue): JsResult[Caterer] = {
+			for {
+				id <- {
+					val id = (json \ "id").validateOpt[String]
+					if (id.isSuccess && id.get.isDefined) id else (json \ "_id").validateOpt[String]
+				}
+				name <- (json \ "name").validate[String]
+				description <- (json \ "description").validate[String]
+				manager <- (json \ "manager").validate[String]
+				email <- (json \ "email").validate[String]
+				//phoneNumber <- (json \ "phoneNumber").validate[PhoneNumber]
+				//location <- (json \ "location").validate[Location]
+				//workingTimes <- (json \ "workingTimes").validate[WorkingTimes]
+				createdBy <- (json \ "createdBy").validate[String]
+				createdAt <- (json \ "createdAt").validateOpt[LocalDateTime]
+				updatedAt <- (json \ "updatedAt").validateOpt[LocalDateTime]
+			} yield {
+				new Caterer(id, name, description, manager, email/*, phoneNumber, location, workingTimes*/, createdBy, createdAt, updatedAt)
+			}
+		}
+	}
+
 	val catererToJsonDB: OWrites[Caterer] = new OWrites[Caterer] {
 		def writes(caterer: Caterer): JsObject = generateJsonForCaterer(caterer)
 	}

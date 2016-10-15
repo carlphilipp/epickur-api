@@ -4,3 +4,7 @@
 GET         /users/$id<[a-zA-Z0-9]+>        com.epickur.api.controllers.UserController.read(id: String)
 PUT         /users/$id<[a-zA-Z0-9]+>        com.epickur.api.controllers.UserController.update(id: String)
 POST        /users                          com.epickur.api.controllers.UserController.create
+
+GET         /caterers/$id<[a-zA-Z0-9]+>        com.epickur.api.controllers.CatererController.read(id: String)
+PUT         /caterers/$id<[a-zA-Z0-9]+>        com.epickur.api.controllers.CatererController.update(id: String)
+POST        /caterers                          com.epickur.api.controllers.CatererController.create
