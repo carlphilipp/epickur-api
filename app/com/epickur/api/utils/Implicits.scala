@@ -25,6 +25,7 @@ object Implicits {
 			)
 		}
 	}
+
 	def jsonToPhoneNumber: Reads[PhoneNumber] = new Reads[PhoneNumber] {
 		def reads(json: JsValue): JsResult[PhoneNumber] = {
 			for {
@@ -38,5 +39,4 @@ object Implicits {
 			}
 		}
 	}
-
 }
