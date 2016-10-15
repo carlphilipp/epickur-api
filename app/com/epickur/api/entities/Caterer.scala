@@ -12,7 +12,7 @@ case class Caterer(var id: Option[String] = None,
 				   var manager: String,
 				   var email: String,
 				   var phoneNumber: PhoneNumber,
-				   //var location: Location,
+				   var location: Location,
 				   //var workingTimes: WorkingTimes,
 				   var createdBy: String,
 				   var createdAt: Option[LocalDateTime] = None,
@@ -45,8 +45,15 @@ case class TimeFrame(var open: Int, var close: Int)
 
 object Caterer {
 	implicit val phoneNumberToJson = Implicites.phoneNumberToJson
-	implicit val jsonToPhoneNumber = Implicites.jsonToPhoneNumber
+	implicit val geoToJsonWeb: OWrites[Geo] = Json.writes[Geo]
+	implicit val addressToJsonWeb: OWrites[Address] = Json.writes[Address]
+	implicit val locationToJsonWeb: OWrites[Location] = Json.writes[Location]
 	val catererToJsonWeb: OWrites[Caterer] = Json.writes[Caterer]
+	val catererToJsonDB: OWrites[Caterer] = new OWrites[Caterer] {
+		def writes(caterer: Caterer): JsObject = generateJsonForCaterer(caterer)
+	}
+
+	implicit val jsonToPhoneNumber = Implicites.jsonToPhoneNumber
 	val jsonToCatererWeb: Reads[Caterer] = new Reads[Caterer] {
 		def reads(json: JsValue): JsResult[Caterer] = {
 			for {
@@ -59,19 +66,46 @@ object Caterer {
 				manager <- (json \ "manager").validate[String]
 				email <- (json \ "email").validate[String]
 				phoneNumber <- (json \ "phoneNumber").validate[PhoneNumber]
-				//location <- (json \ "location").validate[Location]
+				location <- (json \ "location").validate[Location]
 				//workingTimes <- (json \ "workingTimes").validate[WorkingTimes]
 				createdBy <- (json \ "createdBy").validate[String]
 				createdAt <- (json \ "createdAt").validateOpt[LocalDateTime]
 				updatedAt <- (json \ "updatedAt").validateOpt[LocalDateTime]
 			} yield {
-				new Caterer(id, name, description, manager, email, phoneNumber/*, location, workingTimes*/, createdBy, createdAt, updatedAt)
+				Caterer(id, name, description, manager, email, phoneNumber, location /*, workingTimes*/ , createdBy, createdAt, updatedAt)
 			}
 		}
 	}
+	implicit val jsonToLocationWeb: Reads[Location] = new Reads[Location] {
+		def reads(json: JsValue): JsResult[Location] = {
+			for {
+				address <- (json \ "address").validate[Address]
+				geo <- (json \ "geo").validate[Geo]
+			} yield Location(address, geo)
+		}
+	}
 
-	val catererToJsonDB: OWrites[Caterer] = new OWrites[Caterer] {
-		def writes(caterer: Caterer): JsObject = generateJsonForCaterer(caterer)
+	implicit val jsonToAddressWeb: Reads[Address] = new Reads[Address] {
+		def reads(json: JsValue): JsResult[Address] = {
+			for {
+				label <- (json \ "label").validate[String]
+				houseNumber <- (json \ "houseNumber").validate[String]
+				street <- (json \ "street").validate[String]
+				city <- (json \ "city").validate[String]
+				postalCode <- (json \ "postalCode").validate[Int]
+				state <- (json \ "state").validate[String]
+				country <- (json \ "country").validate[String]
+			} yield Address(label, houseNumber, street, city, postalCode, state, country)
+		}
+	}
+
+	implicit val jsonToGeoWeb: Reads[Geo] = new Reads[Geo] {
+		def reads(json: JsValue): JsResult[Geo] = {
+			for {
+				typeOf <- (json \ "typeOf").validate[String]
+				geo <- (json \ "coordinates").validate[Array[Double]]
+			} yield Geo(typeOf, geo)
+		}
 	}
 
 	def getJsonUpdatedCaterer(caterer: Caterer): JsObject = {
@@ -86,7 +120,7 @@ object Caterer {
 			"manager" -> caterer.manager,
 			"email" -> caterer.email,
 			"phoneNumber" -> Json.toJson(caterer.phoneNumber),
-			//"location" -> Json.toJson(caterer.location),
+			"location" -> Json.toJson(caterer.location),
 			//"workingTimes" -> Json.toJson(caterer.workingTimes),
 			"createdBy" -> caterer.createdBy
 		)
