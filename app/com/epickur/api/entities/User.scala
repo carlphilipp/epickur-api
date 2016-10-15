@@ -3,6 +3,7 @@ package com.epickur.api.entities
 import java.time.LocalDateTime
 
 import com.epickur.api.entities.Role.Role
+import com.epickur.api.utils.Implicites
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber
 import play.api.libs.json._
 
@@ -29,42 +30,10 @@ object Role extends Enumeration {
 }
 
 object User {
-	// TODO probably move that function somewhere else
-	def enumReads[E <: Enumeration](enum: E): Reads[E#Value] = new Reads[E#Value] {
-		def reads(json: JsValue): JsResult[E#Value] = json match {
-			case JsString(s) =>
-				try {
-					JsSuccess(enum.withName(s.toLowerCase))
-				} catch {
-					case _: NoSuchElementException => JsError(s"Enumeration expected of type: '${enum.getClass}', but it does not appear to contain the value: '$s'")
-				}
-			case _ => JsError("String value expected")
-		}
-	}
+	implicit val jsonToRole: Reads[Role.Value] = Implicites.enumReads(Role)
+	implicit val phoneNumberToJson = Implicites.phoneNumberToJson
+	implicit val jsonToPhoneNumber = Implicites.jsonToPhoneNumber
 
-	implicit val jsonToRole: Reads[Role.Value] = enumReads(Role)
-
-	implicit val phoneNumberToJson: OWrites[PhoneNumber] = new OWrites[PhoneNumber] {
-		def writes(phoneNumber: PhoneNumber): JsObject = {
-			Json.obj(
-				"countryCode" -> phoneNumber.getCountryCode,
-				"nationalNumber" -> phoneNumber.getNationalNumber
-			)
-		}
-	}
-	implicit val jsonToPhoneNumber: Reads[PhoneNumber] = new Reads[PhoneNumber] {
-		def reads(json: JsValue): JsResult[PhoneNumber] = {
-			for {
-				countryCode <- (json \ "countryCode").validate[Int]
-				nationalNumber <- (json \ "nationalNumber").validate[Long]
-			} yield {
-				val phoneNumber = new PhoneNumber()
-				phoneNumber.setCountryCode(countryCode)
-				phoneNumber.setNationalNumber(nationalNumber)
-				phoneNumber
-			}
-		}
-	}
 	val userToJsonWeb: OWrites[User] = Json.writes[User]
 	val jsonToUserWeb: Reads[User] = new Reads[User] {
 		def reads(json: JsValue): JsResult[User] = {
@@ -131,6 +100,4 @@ object User {
 			json = json + ("updatedAt" -> Json.toJson(user.updatedAt.get))
 		json
 	}
-
-	//implicit val jsonToUser = Json.reads[User]
 }

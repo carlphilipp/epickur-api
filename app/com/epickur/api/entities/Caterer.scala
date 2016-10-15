@@ -2,6 +2,7 @@ package com.epickur.api.entities
 
 import java.time.LocalDateTime
 
+import com.epickur.api.utils.Implicites
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber
 import play.api.libs.json._
 
@@ -10,7 +11,7 @@ case class Caterer(var id: Option[String] = None,
 				   var description: String,
 				   var manager: String,
 				   var email: String,
-				   //var phoneNumber: PhoneNumber,
+				   var phoneNumber: PhoneNumber,
 				   //var location: Location,
 				   //var workingTimes: WorkingTimes,
 				   var createdBy: String,
@@ -43,6 +44,8 @@ case class Hours(var mon: Seq[TimeFrame],
 case class TimeFrame(var open: Int, var close: Int)
 
 object Caterer {
+	implicit val phoneNumberToJson = Implicites.phoneNumberToJson
+	implicit val jsonToPhoneNumber = Implicites.jsonToPhoneNumber
 	val catererToJsonWeb: OWrites[Caterer] = Json.writes[Caterer]
 	val jsonToCatererWeb: Reads[Caterer] = new Reads[Caterer] {
 		def reads(json: JsValue): JsResult[Caterer] = {
@@ -55,14 +58,14 @@ object Caterer {
 				description <- (json \ "description").validate[String]
 				manager <- (json \ "manager").validate[String]
 				email <- (json \ "email").validate[String]
-				//phoneNumber <- (json \ "phoneNumber").validate[PhoneNumber]
+				phoneNumber <- (json \ "phoneNumber").validate[PhoneNumber]
 				//location <- (json \ "location").validate[Location]
 				//workingTimes <- (json \ "workingTimes").validate[WorkingTimes]
 				createdBy <- (json \ "createdBy").validate[String]
 				createdAt <- (json \ "createdAt").validateOpt[LocalDateTime]
 				updatedAt <- (json \ "updatedAt").validateOpt[LocalDateTime]
 			} yield {
-				new Caterer(id, name, description, manager, email/*, phoneNumber, location, workingTimes*/, createdBy, createdAt, updatedAt)
+				new Caterer(id, name, description, manager, email, phoneNumber/*, location, workingTimes*/, createdBy, createdAt, updatedAt)
 			}
 		}
 	}
@@ -82,7 +85,7 @@ object Caterer {
 			"description" -> caterer.description,
 			"manager" -> caterer.manager,
 			"email" -> caterer.email,
-			//"phoneNumber" -> Json.toJson(caterer.phoneNumber),
+			"phoneNumber" -> Json.toJson(caterer.phoneNumber),
 			//"location" -> Json.toJson(caterer.location),
 			//"workingTimes" -> Json.toJson(caterer.workingTimes),
 			"createdBy" -> caterer.createdBy
