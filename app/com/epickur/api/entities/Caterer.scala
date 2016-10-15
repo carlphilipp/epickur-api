@@ -2,7 +2,7 @@ package com.epickur.api.entities
 
 import java.time.LocalDateTime
 
-import com.epickur.api.utils.Implicites
+import com.epickur.api.utils.Implicits
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber
 import play.api.libs.json._
 
@@ -13,6 +13,7 @@ case class Caterer(var id: Option[String] = None,
 				   var email: String,
 				   var phoneNumber: PhoneNumber,
 				   var location: Location,
+				  // TODO next task add working time
 				   //var workingTimes: WorkingTimes,
 				   var createdBy: String,
 				   var createdAt: Option[LocalDateTime] = None,
@@ -44,7 +45,7 @@ case class Hours(var mon: Seq[TimeFrame],
 case class TimeFrame(var open: Int, var close: Int)
 
 object Caterer {
-	implicit val phoneNumberToJson = Implicites.phoneNumberToJson
+	implicit val phoneNumberToJson = Implicits.phoneNumberToJson
 	implicit val geoToJsonWeb: OWrites[Geo] = new OWrites[Geo] {
 		def writes(geo: Geo): JsObject = Json.obj("type" -> geo._type,"coordinates" -> geo.coordinates)
 	}
@@ -58,7 +59,7 @@ object Caterer {
 		def writes(caterer: Caterer): JsObject = generateJsonForCaterer(caterer)
 	}
 
-	implicit val jsonToPhoneNumber = Implicites.jsonToPhoneNumber
+	implicit val jsonToPhoneNumber = Implicits.jsonToPhoneNumber
 	val jsonToCatererWeb: Reads[Caterer] = new Reads[Caterer] {
 		def reads(json: JsValue): JsResult[Caterer] = {
 			for {

@@ -3,7 +3,7 @@ package com.epickur.api.entities
 import java.time.LocalDateTime
 
 import com.epickur.api.entities.Role.Role
-import com.epickur.api.utils.Implicites
+import com.epickur.api.utils.Implicits
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber
 import play.api.libs.json._
 
@@ -30,9 +30,9 @@ object Role extends Enumeration {
 }
 
 object User {
-	implicit val jsonToRole: Reads[Role.Value] = Implicites.enumReads(Role)
-	implicit val phoneNumberToJson = Implicites.phoneNumberToJson
-	implicit val jsonToPhoneNumber = Implicites.jsonToPhoneNumber
+	implicit val jsonToRole: Reads[Role.Value] = Implicits.enumReads(Role)
+	implicit val phoneNumberToJson = Implicits.phoneNumberToJson
+	implicit val jsonToPhoneNumber = Implicits.jsonToPhoneNumber
 
 	val userToJsonWeb: OWrites[User] = Json.writes[User]
 	val jsonToUserWeb: Reads[User] = new Reads[User] {
