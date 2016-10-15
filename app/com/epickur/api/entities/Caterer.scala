@@ -28,7 +28,7 @@ case class Address(var label: String,
 				   var state: String,
 				   var country: String)
 
-case class Geo(var typeOf: String, var coordinates: Array[Double])
+case class Geo(var _type: String, var coordinates: Array[Double])
 
 case class WorkingTimes(var hours: Hours,
 						var minimumPreparationTime: Int)
@@ -45,9 +45,14 @@ case class TimeFrame(var open: Int, var close: Int)
 
 object Caterer {
 	implicit val phoneNumberToJson = Implicites.phoneNumberToJson
-	implicit val geoToJsonWeb: OWrites[Geo] = Json.writes[Geo]
+	implicit val geoToJsonWeb: OWrites[Geo] = new OWrites[Geo] {
+		def writes(geo: Geo): JsObject = Json.obj("type" -> geo._type,"coordinates" -> geo.coordinates)
+	}
 	implicit val addressToJsonWeb: OWrites[Address] = Json.writes[Address]
 	implicit val locationToJsonWeb: OWrites[Location] = Json.writes[Location]
+	implicit val workingTimesToJsonWeb: OWrites[WorkingTimes] = Json.writes[WorkingTimes]
+	implicit val hoursToJsonWeb: OWrites[Hours] = Json.writes[Hours]
+	implicit val timeFrameToJsonWeb: OWrites[TimeFrame] = Json.writes[TimeFrame]
 	val catererToJsonWeb: OWrites[Caterer] = Json.writes[Caterer]
 	val catererToJsonDB: OWrites[Caterer] = new OWrites[Caterer] {
 		def writes(caterer: Caterer): JsObject = generateJsonForCaterer(caterer)
@@ -72,7 +77,7 @@ object Caterer {
 				createdAt <- (json \ "createdAt").validateOpt[LocalDateTime]
 				updatedAt <- (json \ "updatedAt").validateOpt[LocalDateTime]
 			} yield {
-				Caterer(id, name, description, manager, email, phoneNumber, location /*, workingTimes*/ , createdBy, createdAt, updatedAt)
+				Caterer(id, name, description, manager, email, phoneNumber, location/*, workingTimes*/, createdBy, createdAt, updatedAt)
 			}
 		}
 	}
@@ -102,9 +107,41 @@ object Caterer {
 	implicit val jsonToGeoWeb: Reads[Geo] = new Reads[Geo] {
 		def reads(json: JsValue): JsResult[Geo] = {
 			for {
-				typeOf <- (json \ "typeOf").validate[String]
+				_type <- (json \ "type").validate[String]
 				geo <- (json \ "coordinates").validate[Array[Double]]
-			} yield Geo(typeOf, geo)
+			} yield Geo(_type, geo)
+		}
+	}
+
+	implicit val jsonToWorkingTimes: Reads[WorkingTimes] = new Reads[WorkingTimes] {
+		def reads(json: JsValue): JsResult[WorkingTimes] = {
+			for {
+				hours <- (json \ "hours").validate[Hours]
+				minimumPreparationTime <- (json \ "minimumPreparationTime").validate[Int]
+			} yield WorkingTimes(hours, minimumPreparationTime)
+		}
+	}
+
+	implicit val jsonToHours: Reads[Hours] = new Reads[Hours] {
+		def reads(json: JsValue): JsResult[Hours] = {
+			for {
+				mon <- (json \ "mon").validate[Seq[TimeFrame]]
+				tue <- (json \ "tue").validate[Seq[TimeFrame]]
+				wed <- (json \ "wed").validate[Seq[TimeFrame]]
+				thu <- (json \ "thu").validate[Seq[TimeFrame]]
+				fri <- (json \ "fri").validate[Seq[TimeFrame]]
+				sat <- (json \ "sat").validate[Seq[TimeFrame]]
+				sun <- (json \ "sun").validate[Seq[TimeFrame]]
+			} yield Hours(mon, tue, wed, thu, fri, sat, sun)
+		}
+	}
+
+	implicit val jsonToTimeFrame: Reads[TimeFrame] = new Reads[TimeFrame] {
+		def reads(json: JsValue): JsResult[TimeFrame] = {
+			for {
+				open <- (json \ "open").validate[Int]
+				close <- (json \ "close").validate[Int]
+			} yield TimeFrame(open, close)
 		}
 	}
 
