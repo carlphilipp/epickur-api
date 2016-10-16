@@ -105,7 +105,7 @@ object Caterer {
 		}
 	}
 
-	implicit val jsonToAddressWeb2: Reads[TimeFrame] = new Reads[TimeFrame] {
+	implicit val jsonToTimeFrame: Reads[TimeFrame] = new Reads[TimeFrame] {
 		def reads(json: JsValue): JsResult[TimeFrame] = {
 			for {
 				open <- (json \ "open").validate[Int]

@@ -1,7 +1,7 @@
 package com.epickur.api.controllers
 
 import com.epickur.api.entities.User
-import com.epickur.api.utils.TestUtils
+import com.epickur.api.utils.UserUtils
 import org.scalatest.MustMatchers._
 import org.scalatest.{FeatureSpec, GivenWhenThen, Matchers}
 import org.scalatestplus.play._
@@ -41,7 +41,7 @@ class UserControllerSpec extends FeatureSpec with OneAppPerTest with GivenWhenTh
 
 		scenario("Create a new user") {
 			Given("a new user")
-			val user = TestUtils.userAsString
+			val user = UserUtils.userAsString
 
 			When("doing a request to create it")
 			val fakeRequest = FakeRequest(POST, "/users")

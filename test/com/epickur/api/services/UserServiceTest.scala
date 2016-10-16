@@ -2,7 +2,7 @@ package com.epickur.api.services
 
 import com.epickur.api.dao.UserDAO
 import com.epickur.api.entities.{Role, User}
-import com.epickur.api.utils.TestUtils
+import com.epickur.api.utils.UserUtils
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FeatureSpec, GivenWhenThen, Matchers}
@@ -14,9 +14,9 @@ import scala.concurrent.Future
 class UserServiceTest extends FeatureSpec with GivenWhenThen with Matchers with MockitoSugar {
 
 	val userDAO = org.scalatest.mock.MockitoSugar.mock[UserDAO]
-	org.mockito.Mockito.when(userDAO.create(TestUtils.user)) thenReturn Future {}
-	org.mockito.Mockito.when(userDAO.read(TestUtils.id.toString)) thenReturn Future(List(User.getJsonUpdatedUser(null)))
-	org.mockito.Mockito.when(userDAO.update(TestUtils.user)) thenReturn Future {}
+	org.mockito.Mockito.when(userDAO.create(UserUtils.user)) thenReturn Future {}
+	org.mockito.Mockito.when(userDAO.read(UserUtils.id.toString)) thenReturn Future(List(User.getJsonUpdatedUser(null)))
+	org.mockito.Mockito.when(userDAO.update(UserUtils.user)) thenReturn Future {}
 	val userService = new UserService(userDAO)
 
 	info("I want to be able to verify that the user service layer do its job")
@@ -24,7 +24,7 @@ class UserServiceTest extends FeatureSpec with GivenWhenThen with Matchers with 
 	feature("User service") {
 		scenario("Create a user") {
 			Given("a new user")
-			val user = TestUtils.user
+			val user = UserUtils.user
 			val originalPassword = user.password
 
 			When("passing it to the create service")
@@ -52,12 +52,12 @@ class UserServiceTest extends FeatureSpec with GivenWhenThen with Matchers with 
 			assert(user.password != originalPassword)
 
 			Then("the dao layer has been called for user creation")
-			verify(userDAO).create(TestUtils.user)
+			verify(userDAO).create(UserUtils.user)
 		}
 
 		scenario("Get a user") {
 			Given("a user id")
-			val id = TestUtils.id.toString
+			val id = UserUtils.id.toString
 
 			When("passing it to the read service")
 			val actual = userService.read(id)
@@ -66,12 +66,12 @@ class UserServiceTest extends FeatureSpec with GivenWhenThen with Matchers with 
 			assert(actual.isInstanceOf[Future[List[JsObject]]])
 
 			Then("the dao layer has been called for user read")
-			verify(userDAO).read(TestUtils.id.toString)
+			verify(userDAO).read(UserUtils.id.toString)
 		}
 
 		scenario("Update a user") {
 			Given("a user")
-			val user = TestUtils.user
+			val user = UserUtils.user
 
 			When("passing it to the update service")
 			val actual = userService.update(user)
@@ -102,7 +102,7 @@ class UserServiceTest extends FeatureSpec with GivenWhenThen with Matchers with 
 			assert(user.updatedAt.get != null)
 
 			Then("the dao layer has been called for user update")
-			verify(userDAO).update(TestUtils.user)
+			verify(userDAO).update(UserUtils.user)
 		}
 	}
 }

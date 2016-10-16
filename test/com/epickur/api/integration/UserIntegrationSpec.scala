@@ -1,8 +1,8 @@
-package com.epickur.api
+package com.epickur.api.integration
 
 import com.epickur.api.entities.User
-import com.epickur.api.utils.TestUtils
-import com.epickur.api.utils.TestUtils.verifyUser
+import com.epickur.api.utils.UserUtils
+import com.epickur.api.utils.UserUtils.verifyUser
 import play.api.Application
 import play.api.libs.json.{Json, Reads, Writes}
 import play.api.libs.ws.WS
@@ -11,21 +11,18 @@ import play.api.test._
 import reactivemongo.bson.BSONObjectID
 
 
-class ApplicationIntegrationSpec extends PlaySpecification {
+class UserIntegrationSpec extends PlaySpecification {
 
 	implicit val jsonToUser: Reads[User] = User.jsonToUserWeb
 	implicit val userToJson: Writes[User] = User.userToJsonWeb
 
 	val url = "http://localhost:"
+	val usersPath = "/users"
 
 	"Application" should {
-		"return 404 when accessing unknown resource" in new WithServer {
-			val response = await(WS.url(url + port + "/boomz").get)
-			response.status must equalTo(NOT_FOUND)
-		}
 
 		"return 404 when accessing a non existing user" in new WithServer {
-			val response = await(WS.url(url + port + "/users/" + BSONObjectID.generate.stringify).get)
+			val response = await(WS.url(url + port + usersPath + "/" + BSONObjectID.generate.stringify).get)
 			response.status must equalTo(NOT_FOUND)
 		}
 
@@ -38,8 +35,9 @@ class ApplicationIntegrationSpec extends PlaySpecification {
 			val user = createAndValidateUser(port)
 
 			// Get that user
-			val response = await(WS.url(url + port + "/users/" + user.id.get).get)
+			val response = await(WS.url(url + port + usersPath + "/" + user.id.get).get)
 
+			// Verify
 			response.status must equalTo(OK)
 			response.json must not be null
 			val userResponse = response.json.as[User]
@@ -49,13 +47,14 @@ class ApplicationIntegrationSpec extends PlaySpecification {
 		"update a user" in new WithServer {
 			// Create user
 			val user = createAndValidateUser(port)
-			val userUpdated = TestUtils.user
+			val userUpdated = UserUtils.user
 			userUpdated.id = user.id
 			userUpdated.email = "newemail@email.com"
 
 			// Update user
-			val response = await(WS.url(url + port + "/users/" + user.id.get).withHeaders(CONTENT_TYPE -> JSON).put(Json.toJson(userUpdated)))
+			val response = await(WS.url(url + port + usersPath + "/" + user.id.get).withHeaders(CONTENT_TYPE -> JSON).put(Json.toJson(userUpdated)))
 
+			// Verify
 			response.status must equalTo(OK)
 			response.json must not be null
 			val userResponse = response.json.as[User]
@@ -64,9 +63,9 @@ class ApplicationIntegrationSpec extends PlaySpecification {
 	}
 
 	private def createAndValidateUser(port: Int)(implicit application: Application) = {
-		val user = TestUtils.userAsString
+		val user = UserUtils.userAsString
 
-		val response = await(WS.url(url + port + "/users").withHeaders(CONTENT_TYPE -> JSON).post(Json.parse(user)))
+		val response = await(WS.url(url + port + usersPath).withHeaders(CONTENT_TYPE -> JSON).post(Json.parse(user)))
 
 		response.status must equalTo(OK)
 		response.json must not be null

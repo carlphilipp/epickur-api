@@ -1,4 +1,4 @@
-package com.epickur.api
+package com.epickur.api.controllers
 
 import org.scalatest.MustMatchers._
 import org.scalatest.{FeatureSpec, GivenWhenThen, Matchers}
